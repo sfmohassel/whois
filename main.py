@@ -16,27 +16,17 @@ def cli():
 
 
 @cli.command()
-@click.option("--count", default=1, help="Number of greetings.")
-@click.option("--name", prompt="Your name", help="The person to greet.")
-def hello(count, name):
-    """Simple program that greets NAME for a total of COUNT times."""
-    for x in range(count):
-        click.echo(f"Hello {name}!")
-
-
-@cli.command()
 @click.option(
     "--domains",
     prompt="Domain names without extension (comma separated)",
-    help="Domain names without extension.",
+    help="Domain names without extension. Example: 'cool-domain,heiss-domain'",
 )
 @click.option(
-    "--extensions", help="Domain extensions (comma separated).", default="com,ai,net"
+    "--extensions",
+    help="Domain extensions (comma separated). Default value: 'com,ai,net'",
+    default="com,ai,net",
 )
-@click.option(
-    "--only-available", is_flag=True, default=True, help="Show only available domains."
-)
-def whois(domains, extensions, only_available):
+def whois(domains, extensions):
     """Check if a domain is available."""
     if not domains:
         click.echo("Please provide a domain names.")
@@ -45,8 +35,6 @@ def whois(domains, extensions, only_available):
     if not extensions:
         click.echo("Please provide domain extensions.")
         return
-
-    click.echo(f"Checking availability for '{domains}' with extensions: '{extensions}'")
 
     extensions = [ext.strip() for ext in extensions.split(",")]
     domains = [domain.strip() for domain in domains.split(",")]
@@ -63,7 +51,7 @@ def whois(domains, extensions, only_available):
         # Simulate domain availability check
         sleep(atoi(os.getenv("SLEEP", "1")))
         res = check_domain_availability(domain)
-        if only_available and not res["available"]:
+        if not res["available"]:
             continue
         table.add_row([domain, res["available"], res["error"]])
     print(table)
